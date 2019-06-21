@@ -22,7 +22,7 @@ import org.springframework.context.annotation.DependsOn;
  * @Configuration 注解描述的类为一个配置对象，
  *     此对象也会交给Spring管理
  */
-@Configuration //bean
+
 public class SpringShiroConfig { //spring-shiro.xml
 	/** @Bean 描述的方法，其返回值会交给spring管理
 	 *  @Bean 一般应用在整合第三方bean资源时 */
