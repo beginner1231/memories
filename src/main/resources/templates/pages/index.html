@@ -53,8 +53,8 @@
 									说说
 								</a>
 							</li>
-							<li>
-								<a href="projects.html" title="">
+							<li id="journal">
+								<a>	
 									<span><img src="images/icon3.png" alt=""></span>
 									日志
 								</a>
@@ -653,6 +653,7 @@
 
 
 
+
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/popper.js"></script>
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -660,5 +661,18 @@
 <script type="text/javascript" src="lib/slick/slick.min.js"></script>
 <script type="text/javascript" src="js/scrollbar.js"></script>
 <script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript">
+$(function(){
+	//点击事件注册
+	//点击指定id对应的对象时,执行某些操作(页面加载)
+  $("#journal").click(function(){
+	  var url="/journal/doJournalUI";
+	  //load函数为一个异步加载函数
+	  //可以基于url异步加载资源并添加到指定位置
+	  $("main").load(url);
+  })
+})
+</script>
+
 </body>
 </html>

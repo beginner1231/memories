@@ -1,0 +1,106 @@
+<script>
+//Demo
+layui.use('form', function(){
+  var form = layui.form;
+  form.render();
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    layer.msg(JSON.stringify(data.field));
+    return false;
+  });
+});
+</script>
+<form class="layui-form" action="">
+  <div class="layui-form-item">
+    <label class="layui-form-label">标题</label>
+    <div class="layui-input-block">
+      <input type="text" name="title" required lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="title">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">标签</label>
+    <div class="layui-input-block">
+      <input type="text" name="label" required lay-verify="required" placeholder="请输入标签" autocomplete="off" class="layui-input" id="label">
+    </div>
+    
+  </div>
+  
+  <div id="editor"></div>
+  
+</form>
+
+
+
+
+
+<script type="text/javascript" src="js/wangEditor.min.js"></script>
+	<script type="text/javascript">
+	var E = window.wangEditor
+    var editor = new E('#editor')
+	editor.customConfig.menus = [
+		'head',
+	    'bold',
+	    'fontSize',
+	    'fontName',
+	    'italic',
+	    'underline',
+	    'strikeThrough',
+	    'foreColor',
+	    'backColor',
+	    'undo',
+	    'redo',
+	    'emoticon',
+    	'image',
+    ]
+    editor.create();
+    
+    	$(function(){
+    	    
+    	    $("#btn")
+    	    .on("click","#submit",doSave)
+    	    
+    	    	
+    	  });
+	
+    	function doSave(){
+    		debugger;
+    	    //1.参数(表单数据)
+    	    var params=doGetEditFormData();
+    	    if(!params.title.trim()){
+    	    	alert("标题不能为空");
+    	    	return;
+    	    }
+    	   	if(!params.content.trim()){
+    	   		alert("内容不能为空")
+    	   		return;
+    	   	}
+        	
+   	    	//2.url
+   	    	var url="journal/doSaveObject";
+   	    	
+    	    	
+    	    	//3.ajax request
+    	    	$.post(url,params,function(result){
+    	    		if(result.state==1){
+    	    		   alert(result.message);
+    	    		   doRefrush();
+    	    		}else{
+    	    		   alert(result.message);
+    	    		}
+    	    	})
+    	    	
+    	    }
+    	
+    	
+    	
+    	function doGetEditFormData(){
+    		
+        	//1.获取角色自身信息
+        	var params={
+        		title:$("#title").val(),
+        		label:$("#label").val(),
+        		content:editor.txt.text()
+        	}
+        	return params;
+        }
+	</script>

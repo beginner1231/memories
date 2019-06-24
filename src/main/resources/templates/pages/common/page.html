@@ -1,0 +1,68 @@
+<ul class="pagination pagination-sm no-margin pull-right">
+	<li><a class="first">首页</a></li>
+	<li><a class="pre">上一页</a></li>
+	<li><a class="next">下一页</a></li>
+	<li><a class="last">尾页</a></li>
+	<li><a class="rowCount">总记录数(0)</a></li>
+	<li><a class="pageCount">总页数(0)</a></li>
+	<li><a class="pageCurrent">当前页(0)</a></li>
+</ul>
+<script type="text/javascript">
+	$(function(){
+		$("#pageId").on("click",".first,.pre,.next,.last",doJumpToPage);
+	})
+	
+	function doJumpToPage(){
+		//1.获取被点击对象class属性的值
+		let cls = $(this).prop("class");
+		//2.基于class属性的值修改当前页码值
+		var pageCurrent=$("#pageId").data("pageCurrent");
+		var pageCount=$("#pageId").data("pageCount");
+		if(cls=="first"){
+			pageCurrent=1;
+		}else if(cls=="pre"&&pageCurrent>1){
+			pageCurrent--;
+		}else if(cls=="next"&&pageCurrent<pageCount){
+			pageCurrent++;
+		}else if(cls=="last"){
+			pageCurrent=pageCount;
+		}else{
+			return
+		}
+		//3.对pageCurrent值进行重新绑定
+        $("#pageId").data("pageCurrent",pageCurrent);
+        //4.基于新的pageCurrent的值进行当前页数据查询
+        doGetObjects();
+	}
+	
+	function doInitPagination(){
+		//1.初始化总纪录数
+		$(".rowCount").html("总记录数(0)");
+		//2.初始化总页数
+		$(".pageCount").html("总页数(0)");
+		//3.初始化当前页码
+		$(".pageCurrent").html("当前页(0)");
+	}
+	
+	//初始化分页信息
+	function doSetPagination(pageObject){
+		//1.初始化总纪录数
+		$(".rowCount").html("总记录数("+pageObject.rowCount+")");
+		//2.初始化总页数
+		$(".pageCount").html("总页数("+pageObject.pageCount+")");
+		//3.初始化当前页码
+		$(".pageCurrent").html("当前页("+pageObject.pageCurrent+")");
+		//4.保存当前页码值和总页数(借助data函数)
+		//data函数语法:data(key,[value]);
+		$("#pageId").data("pageCurrent",pageObject.pageCurrent);
+		$("#pageId").data("pageCount",pageObject.pageCount);
+	}
+</script>
+
+
+
+
+
+
+
+

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.memories.qzone.dao.JournalDao">
+	
+	
+	
+	<!-- 统计纪录总数 -->
+	<select id="getRowCount" resultType="int">
+		select count(*) from journal where user_id=#{userId}
+	</select>
+	<!-- 查询当前页数 -->
+	<select id="findPageObjects" resultType="com.cy.memories.qzone.entity.JournalEntity">
+		select * from journal
+		where user_id=#{userId}
+		order by created_time desc
+		limit #{startIndex},#{pageSize}
+	</select>
+	
+	<delete id="deleteObject">
+		delete from journal where where id=#{id}
+	</delete>
+	
+	<delete id="deleteObjects">
+		delete from journal where id in
+		<foreach collection="ids" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<insert id="insertObject">
+		insert into journal
+       (title,content,created_time,modified_time,label,user_id) values(#{title},#{content},now(),now(),#{label},#{userId})
+	</insert>
+	
+	<update id="updateObject">
+		update journal
+        <set>
+            <if test="title!=null and title!=''">
+                title=#{title},
+            </if>
+            <if test="content!=null and content!=''">
+                content=#{content},
+            </if>
+            <if test="userId!=null and userId!=''">
+                user_id=#{userId},
+            </if>
+            
+            label=#{label},
+            
+            modified_time=now()
+        </set>
+         where id=#{id}
+	</update>
+	
+	<select id="findObjectById" resultType="com.cy.memories.qzone.entity.JournalEntity">
+		select * from journal
+		where id=#{id}
+	</select>
+	
+</mapper>
