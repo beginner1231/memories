@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.memories.qzone.dao.FeelCommDao">
+	<insert id="insertObject">
+	insert into feel_comm(created_time,content,user_id,feel_id) 
+	values(now(),#{content},#{userId},#{feelId})
+	</insert>
+	<select id="findFeelCommById" resultType="com.cy.memories.qzone.vo.FeelCommUserVo">
+		select u2.nick_name,fc.*
+		from feel_comm fc 
+		left join user_info u2 on fc.user_id=u2.user_id
+		where fc.feel_id=#{id}
+		order by fc.created_time
+	</select>
+</mapper>

@@ -10,4 +10,9 @@ public class PageController {
 	public String doIndexUI() {
 		return "index";
 	}
+	
+	@RequestMapping("doPageUI")
+	public String doPageUI(){
+		 return "common/paging";
+	}
 }

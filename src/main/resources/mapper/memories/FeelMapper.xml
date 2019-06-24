@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.memories.qzone.dao.FeelDao">
+	<!-- <select id="getRowCount" resultType="int">
+		select count(*) from feel join friend_map
+		on feel.user_id=friend_map.friend_id
+		where friend_map.user_id=#{userId}
+	</select> -->
+	
+	<select id="getRowCount" resultType="int">
+		select count(*) from feel left join friend_map
+		on feel.user_id=friend_map.friend_id
+		where friend_map.user_id=#{userId} or feel.user_id=#{userId}
+	</select>
+	
+<!-- 	<select id="doFindObjects"
+		resultType="com.cy.memories.qzone.vo.FeelUserVo">
+		select u.nick_name,f.* from feel f join friend_map m join user_info u
+		on f.user_id=m.friend_id
+		and u.user_id=m.friend_id
+		where m.user_id=#{userId}
+		order by f.created_time desc
+		limit #{startIndex},#{pageSize}
+	</select> -->
+	
+	<resultMap type="com.cy.memories.qzone.vo.FeelUserFeelCommVo" id="feelUserFeelCommVoMap">
+		<result column="id" property="id"/>
+		<!-- <result column="user_id" property="userId"/>
+		<result column="created_time" property="createdTime"/>
+		<result column="content" property="content"/> -->
+		<collection property="feelcomms" column="id"
+			select="com.cy.memories.qzone.dao.FeelCommDao.findFeelCommById">
+		</collection>
+	</resultMap>
+	
+	<select id="doFindObjects" resultMap="feelUserFeelCommVoMap">
+	<!-- select u1.nick_name,f.*
+    from feel f 
+    left join friend_map m on f.user_id=m.friend_id 
+    left join user_info u1 on m.friend_id=u1.user_id 
+    where m.user_id=#{userId} 
+    order by f.created_time desc 
+    limit #{startIndex},#{pageSize} -->
+	select u.nick_name,f.*
+    from feel f 
+    left join friend_map m on f.user_id=m.friend_id 
+    left join user_info u on m.friend_id=u.user_id 
+    where m.user_id=#{userId} 
+    union
+    select u1.nick_name,f1.*
+    from feel f1 
+    left join user_info u1 on f1.user_id=u1.user_id 
+    where f1.user_id=#{userId} 
+    order by created_time desc 
+    limit #{startIndex},#{pageSize}
+	</select>
+	
+<!-- 	<select id="doFindObjects" resultMap="feelUserFeelCommVoMap">
+	select u1.nick_name,u2.nick_name,f.*,fc.created_time,fc.content 
+    from feel f 
+    left join friend_map m on f.user_id=m.friend_id 
+    left join user_info u1 on m.friend_id=u1.user_id 
+    left join feel_comm fc on f.id=fc.feel_id 
+    left join user_info u2 on fc.user_id=u2.user_id 
+    where m.user_id=#{userId} 
+    order by f.created_time desc 
+    limit #{startIndex},#{pageSize}
+	</select> -->
+	
+	<insert id="insertFeels">
+	insert into feel(user_id,created_time,content)
+	values(#{userId},now(),#{content})
+	</insert>
+</mapper>

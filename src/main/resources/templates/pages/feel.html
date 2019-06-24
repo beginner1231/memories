@@ -1,0 +1,178 @@
+<div class="post-topbar">
+	<div class="user-picy">
+		<img src="images/resources/user-pic.png" alt="">
+	</div>
+	<textarea name="feeling" id="feelId" cols="48" rows="3"></textarea>
+	<div class="post-st">
+		<ul>
+			<li><input type="button" onclick='doInsertFeels()' class='layui-btn layui-btn-danger' value="发表"></li>
+		</ul>
+	</div><!--post-st end-->
+</div><!--post-topbar end-->
+<div class="post-bar" style="padding:10px;">
+	全部动态
+</div>
+<div class="post-bar">
+	<div id="tableId" class="job_descp">
+		数据加载中...
+	</div>										
+</div>
+<div id="pageId" class="box-footer clearfix"></div>
+<script type="text/javascript">
+  	$(function(){
+		//异步加载分页页面
+		//当load函数异步请求结束执行doGetObjects
+		$("#pageId").load("doPageUI",doGetObjects);
+		//$(".say-div input[type='button']").on("click",doInsertComms);
+		//alert(11);
+	}); 
+  	//添加说说
+  	function doInsertFeels(){
+  		//1.定义请求的url
+		var url = "/feel/insertFeels";
+		//2.定义请求的参数
+		let content=$("#feelId").val();
+		//用户id先给1，后期动态获取当前(登录)评论用户id
+		let userId=1;
+		var params = {
+				"userId" : userId,
+				"content" : content,
+		}
+		//3.发送异步请求(借助jquery中的ajax函数)
+		$.getJSON(url, params, function(result) {
+			 if(result.state==1){
+				 debugger;
+				 $("#feelId").val("");
+				 doGetObjects();
+			 }else{
+				 alert(result.message);
+			 }
+		});
+  	}
+  	//添加评论
+  	function doInsertComms(i){
+  		//alert(22);
+  		debugger;
+  		//1.定义请求的url
+		var url = "/feelcomm/insertCommObject";
+		//2.定义请求的参数
+		var content=$("#commId"+i).val();
+		var feelId=$("#feelId"+i).val();
+		//用户id先给1，后期动态获取当前(登录)评论用户id
+		var userId=1;
+		//var createdTime=new Date().toLocaleString();
+		var params = {
+			"userId" : userId,
+			"content" : content,
+			"feelId" : feelId
+		}
+		//3.发送异步请求(借助jquery中的ajax函数)
+		$.getJSON(url, params, function(result) {
+			 if(result.state==1){
+				 doGetObjects();
+			 }else{
+				 alert(result.message);
+			 }
+		});
+  	}
+	//异步查询好友说说
+	function doGetObjects() {
+		//1.定义请求的url
+		var url = "feel/doFindPageObjects";
+		//2.定义请求的参数
+		var pageCurrent=$("#pageId").data("pageCurrent");
+		if(!pageCurrent){
+			pageCurrent=1
+		}
+		var params = {
+			"pageCurrent" : pageCurrent
+		}
+		//3.发送异步请求(借助jquery中的ajax函数)
+		$.getJSON(url, params, function(result) {
+			//result对应服务端的JsonResult
+			console.log(result)
+			doHandleResponseResult(result);
+		});
+	}
+	//处理查询响应结果
+	function doHandleResponseResult(result){
+		if(result.state==1){
+			//1.将说说记录添加到table中
+			doSetTableBodyRows(result.data.records);
+			//2.将日志分页信息添加到pageId位置
+			doSetPagination(result.data);
+		}else{
+			alert(result.message);
+		}
+	}
+	function doSetTableBodyRows(records){
+		//debugger;
+		//1.获取对应div对象，并清空数据
+		var div=$("#tableId");
+		div.empty();
+		//2.迭代说说记录records，将其追加到div
+		for(var i=0;i<records.length;i++){
+			var tdiv=$("<div class='say-div post-bar'></div>");
+			var table=$("<table class='layui-table'></table>");
+			//2.1创建tr对象(第一行)
+			var tr1=$("<tr></tr>");
+			//2.2创建多个td对象(三列)
+			var tds=doCreateTds(records[i],i);
+			//2.3将创建的td追加到tr对象中
+			tr1.append(tds);
+			//2.4创建tr对象(第二行)
+			var tr2=$("<tr></tr>");
+			//2.5创建一个td对象(一列)
+			var td="<td colspan='4'>"+records[i].content+"</td>";	
+			//2.6将创建的td追加到tr对象中
+			tr2.append(td);
+			//2.7将tr追加到table中
+			table.append(tr1);
+			table.append(tr2);
+			tdiv.append(table);
+			var csdiv=$("<div></div>");
+			//console.log(records);
+			for(var j=0;j<records[i].feelcomms.length;j++){
+				var cdiv=$("<div></div>");
+				var ctable=$("<table></table>");
+				var ctr1=$("<tr></tr>");
+				var ctds=doCreatecTds(records[i].feelcomms[j],j);
+				ctr1.append(ctds);
+				var ctr2=$("<tr></tr>");
+				var ctd="<td colspan='4'>"+records[i].feelcomms[j].content+"</td>";
+				ctr2.append(ctd);
+				ctable.append(ctr1);
+				ctable.append(ctr2);
+				cdiv.append(ctable);
+				csdiv.append(cdiv);
+			}
+			var textarea=$("<textarea id='commId"+i+"' name='comm' cols='58' rows='2'></textarea>");
+			csdiv.append(textarea);
+			var input=$("<input type='button' onclick='doInsertComms("+i+")' class='comm-btn layui-btn layui-btn-danger layui-btn-sm' value='评论'>");
+			csdiv.append(input);
+			div.append(tdiv);
+			div.append(csdiv);
+		}
+	}
+	function doCreateTds(data,i){
+		var tds="<td class='layui-hide'><input type='hidden' id='feelId"+i+"' value='"+data.id+"'></td>"+
+			"<td class='layui-hide' value='"+data.userId+"'></td>"+
+			"<td>"+data.nickName+"</td>"+
+			"<td>"+fttDate(data.createdTime)+"</td>";	   
+		return tds;
+	}
+	function doCreatecTds(data,j){
+		var ctds="<td class='layui-hide'><input type='hidden' id='feelCommId"+j+"' value='"+data.id+"'></td>"+
+			"<td class='layui-hide' value='"+data.userId+"'></td>"+
+			"<td>"+data.nickName+"</td>"+
+			"<td>"+fttDate(data.createdTime)+"</td>";	   
+		return ctds;
+	}
+	function fttDate(time) {
+		//格式化时间成此格式 2019-06-23 10:20:03
+		var dateee = new Date(time).toJSON();
+		var date = new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString()
+				.replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+		return date;
+	}
+</script>

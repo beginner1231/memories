@@ -17,6 +17,7 @@
 <link rel="stylesheet" type="text/css" href="lib/slick/slick-theme.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/responsive.css">
+<link rel="stylesheet" type="text/css" href="./layui/css/layui.css">
 </head>
 
 
@@ -311,7 +312,7 @@
 									</div><!--tags-sec end-->
 								</div><!--main-left-sidebar end-->
 							</div>
-							<div class="col-lg-6 col-md-8 no-pd">
+							<div id="mainContentId" class="col-lg-6 col-md-8 no-pd">
 								说说模块
 								
 							</div>
@@ -660,5 +661,11 @@
 <script type="text/javascript" src="lib/slick/slick.min.js"></script>
 <script type="text/javascript" src="js/scrollbar.js"></script>
 <script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="./layui/layui.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$("#mainContentId").load("feel/doFeelListUI");
+	});
+</script>
 </body>
 </html>

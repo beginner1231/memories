@@ -1,7 +1,9 @@
 package com.cy.memories.qzone.service;
 
-public interface FeelCommService{
+import com.cy.memories.qzone.entity.FeelCommEntity;
 
+public interface FeelCommService{
+	int insertObject(FeelCommEntity entity);
     
 }
 
