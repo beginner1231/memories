@@ -70,11 +70,9 @@
 									<li><a href="my-profile-feed.html" title="">my-profile-feed</a></li>
 								</ul>
 							</li>
-							<li>
-								<a href="jobs.html" title="">
+							<li id="message-board">
 									<span><img src="images/icon5.png" alt=""></span>
-									留言板
-								</a>
+									<a>留言板</a>
 							</li>
 							<li>
 								<a href="#" title="" class="not-box-open">
@@ -665,6 +663,10 @@
 <script type="text/javascript">
 	$(function(){
 		$("#mainContentId").load("feel/doFeelListUI");
+		   $("#message-board").click(function(){
+				  //load函数是将url对应的资源加载到指定位置
+			  $(".col-lg-6").load("messageBoard/doMessageBoardUI");
+		   });  
 	});
 </script>
 </body>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.memories.qzone.dao.MessagesBoardDao">
+	<select id="findMessagesObjects" resultType="map">
+		SELECT
+		m.*, u.nick_name
+		FROM
+		message m
+		LEFT JOIN user_info u ON m.create_user_id = u.user_id
+		WHERE
+		m.user_id=#{userId}
+		ORDER BY m.created_time DESC
+	</select>
+	<select id="getRowCount" resultType="int">
+		select count(*) from message where user_id=#{userId}
+	</select>
+	<insert id="insertMessager"  parameterType="com.cy.memories.qzone.entity.MessagesBoard">
+		INSERT INTO message (
+		id,
+		content,
+		created_time,
+		user_id,
+		create_user_id
+		)
+		VALUES
+		(
+		null,
+		#{content},
+		NOW(),
+		#{userId},
+		#{createUserId}
+		)
+	</insert>
+	
+	<delete id="deletetMessage" parameterType="com.cy.memories.qzone.entity.MessagesBoard">
+		DELETE FROM message WHERE id=#{id};
+	</delete>
+	
+</mapper>
+
+
+

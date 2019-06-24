@@ -1,0 +1,125 @@
+<div
+	style="background: #e44d3a; color: #FFF; text-align: center; font-size: 24px; height: 70px; line-height: 70px;">
+	<h2>留&nbsp&nbsp&nbsp言&nbsp&nbsp&nbsp板</h2>
+</div>
+<div>
+	<textarea type="OVERFLOW:hidden" id="messages-set-content"
+		style="height: 100px; width: 100%;"></textarea>
+	<div id="asd">
+		<button type="button" id="send-message"
+			style="text-align: center; color: #FFF; font-size: 20px; background-color: #e44d3a">发表留言</button>
+	</div>
+</div>
+
+<div class="messages-bar" style="margin: 50px 0; width: 100%">
+
+</div>
+<script type="text/javascript">
+	$(function() {
+		loadMessagePage();
+		$("#send-message").click(insertMessage);
+		$("#delete-message").click(deleteMessage);
+	});
+	function loadMessagePage() {
+		var url = "messageBoard/findMessagesObjects";
+		//页码
+		var pageCurrent = 1;
+		//用户id
+		var userId = 1;
+		var params = {
+			"pageCurrent" : pageCurrent,
+			"userId" : userId
+		};
+		$.getJSON(url, params, function(result) {//jsonResult
+			console.log(result);
+			doHandleResponseResult(result);
+		});
+	
+	}
+	function insertMessage() {
+		//发表留言板
+		let url = "messageBoard/insertMessage";
+		var content = $("#messages-set-content").val();
+		//判断用户是否输入内容
+		if(content.match(/^\s*$/)){
+			alert("请输入内容");
+			return;
+		}
+		//被留言者id
+		var userId = 1;
+		//留言者id
+		var createUserId = 3;
+		var param = {
+			"content" : content,
+			"userId" : userId,
+			"createUserId" : createUserId
+		};
+		$.post(url, param, function(result) {
+			if (result.state == 1) {
+				$("#messages-set-content").val('');
+				loadMessagePage();
+				alert(result.message);
+			} else {
+				alert(result.message);
+			}
+		});
+	}
+	function doHandleResponseResult(result) {
+		if (result.state == 1) {//呈现数据(重点)
+			//将记录呈现在本页面的位置
+			doSetContent(result.data.records);
+		} else {
+			alert(result.message);
+		}
+	}
+	function doSetContent(records) {
+		//1.获取对象,并清空
+		var content = $(".messages-bar");
+		content.empty();
+		//2.将记录records进行呈现
+		//2.1迭代记录集
+		var commentCount = ""
+		for (var i = 0; i < records.length; i++) {
+			//添加内容
+			var messageId=records[i].id;
+			var time = fttDate(records[i].created_time);
+			commentCount += '<div class="usy-dt">';
+			commentCount += '<img src="images/resources/us-pic.png" alt="">';
+			commentCount += '<div class="usy-name">';
+			commentCount += '<h3>' + records[i].nick_name + '</h3>';
+			commentCount += '<span>' + time + '</span>';
+			commentCount += '<span class="delete" onclick="deleteMessage('+messageId+')">';
+			commentCount += '&nbsp&nbsp&nbsp&nbsp删除</span>';
+			commentCount += '</div></div>';
+			commentCount += '<div id="messages-top" class="widget" style="height: 200px; width: 100%; padding: 0; margin: 0;">';
+			commentCount += '<div id="messages-content">';
+			commentCount += '<p>' + records[i].content + '</p>';
+			commentCount += '</div></div>';
+		}
+		content.append(commentCount);
+
+	}
+	function fttDate(time) {
+		//格式化时间成此格式 2019-06-23 10:20:03
+		var dateee = new Date(time).toJSON();
+		var date = new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString()
+				.replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+		return date;
+	}
+	function deleteMessage(messageId){
+		if(!confirm("确认删除"))return;
+		let id=messageId;
+		let param={"id":id};
+		let url="messageBoard/deleteMessage";
+		$.post(url, param, function(result) {
+			if (result.state == 1) {
+				loadMessagePage();
+				alert(result.message);
+			} else {
+				alert(result.message);
+			}
+		})
+
+		
+	}
+</script>
